@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 import java.util.Random;
 
@@ -26,13 +29,14 @@ public class FlappyBirdClone extends ApplicationAdapter {
 	float tubeWidth;                    // with of the tube
 	boolean gameStarted;                // game state - started or not
 	boolean gameOver;                   // game state - over or not
-	float fallingHeight;				// height of the falling
-	float fallingGravityFactor;			// falling gravity factor
-	float tubeGap;						// gap between top and bottom // const
+	float fallingHeight;                // height of the falling
+	float fallingGravityFactor;         // falling gravity factor
+	float tubeGap;				        // gap between top and bottom // const
 	float tubeGapOffSets[];				// changing gap between
 	float tubePositionX[];
 	int numberOfTubes;
 	Random rand;
+    float min;
 	float tubeSpeed;
 	float tubeOffset;					// distance
 	int gameScore;
@@ -45,6 +49,9 @@ public class FlappyBirdClone extends ApplicationAdapter {
 	float[] bottomTubeEnd;				//  ,,
 	boolean[] positionCondition;        // tube and bird are in same y axis or not
     float birdXEnd;
+    // this should replace with replay button
+    boolean tap1;
+    boolean tap2;
 
 	@Override
 	public void create () {
@@ -79,7 +86,7 @@ public class FlappyBirdClone extends ApplicationAdapter {
 		gameScore = 0;
 		birdWidth = screenWidth/9;
 		birdHeight = screenWidth/11;
-		float min = (float) -0.5;
+		min = (float) -0.5;
 		topTubeEnd = screenHeight/2;
 		bottomTubeStart = 0;
 		birdXEnd = birdPositionX + birdWidth;
@@ -92,6 +99,10 @@ public class FlappyBirdClone extends ApplicationAdapter {
 			topTubeStart[i] = screenHeight / 2 + tubeGap / 2 + tubeGapOffSets[i];
 			bottomTubeEnd[i] = screenHeight / 2 - tubeGap / 2 + tubeGapOffSets[i];
 	    }
+
+	    tap1 = false;
+	    tap2 = false;
+
 	}
 
 	@Override
@@ -170,6 +181,28 @@ public class FlappyBirdClone extends ApplicationAdapter {
 			batch.draw(gameOverImage, screenWidth/2 - screenWidth/6, screenHeight/2 -screenHeight/16, screenWidth/3, screenHeight/8);
 			// bird
 			batch.draw(bird, birdPositionX, birdPositionY ,birdWidth, birdHeight);
+
+			// this should replace play again button
+			if(Gdx.input.justTouched()) {
+			    if(tap1 &&Gdx.input.justTouched()) {
+                    if (tap1 && Gdx.input.justTouched()) {
+                        gameOver = false;
+                        gameStarted = false;
+                        for (int i = 0; i < numberOfTubes; i++) {
+                            tubePositionX[i] = screenWidth + i * tubeOffset;
+                            tubeGapOffSets[i] = tubeGap * (rand.nextFloat() + min);
+                            topTubeStart[i] = screenHeight / 2 + tubeGap / 2 + tubeGapOffSets[i];
+                            bottomTubeEnd[i] = screenHeight / 2 - tubeGap / 2 + tubeGapOffSets[i];
+                        }
+                        birdPositionY = screenHeight / 2 - screenWidth / 18;
+                        tap1 = false;
+                        tap2 = false;
+                        gameScore = 0;
+                    }
+                    tap2 = true;
+                }
+                tap1 = true;
+            }
 		}
 		font.draw(batch, String.valueOf(gameScore), screenWidth - 90, screenHeight - 20);
 		batch.end();
