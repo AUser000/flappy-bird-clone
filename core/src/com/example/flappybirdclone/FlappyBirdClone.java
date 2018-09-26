@@ -2,27 +2,30 @@ package com.example.flappybirdclone;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.Random;
 
 public class FlappyBirdClone extends ApplicationAdapter {
 	SpriteBatch batch;
-	Texture background;                // background image
-	Texture bird;                      // bird up
-	Texture bird2;                     // bird down
-	Texture tubeTop;                   // top tube
-	Texture tubeBotm;                  // bottom tube
-	float screenWidth;                 // width of the screen
-	float screenHeight;                // height of the screen
-	float birdPositionX;               // bird position in X axis
-	float birdPositionY;               // bird position in Y axis
-	boolean fly;                       // flying state
-	float tubeWidth;                   // with of the tube
-	boolean gameStarted;               // game state - started or not
-	boolean gameOver;                  // game state - over or not
+	Texture background;                 // background image
+	Texture bird;                       // bird up
+	Texture bird2;                      // bird down
+	Texture tubeTop;                    // top tube
+	Texture tubeBotm;                   // bottom tube
+    Texture gameOverImage;
+    Texture playImage;
+	float screenWidth;                  // width of the screen
+	float screenHeight;                 // height of the screen
+	float birdPositionX;                // bird position in X axis
+	float birdPositionY;                // bird position in Y axis
+	boolean fly;                        // flying state
+	float tubeWidth;                    // with of the tube
+	boolean gameStarted;                // game state - started or not
+	boolean gameOver;                   // game state - over or not
 	float fallingHeight;				// height of the falling
 	float fallingGravityFactor;			// falling gravity factor
 	float tubeGap;						// gap between top and bottom // const
@@ -33,16 +36,15 @@ public class FlappyBirdClone extends ApplicationAdapter {
 	float tubeSpeed;
 	float tubeOffset;					// distance
 	int gameScore;
+	BitmapFont font;
 	float birdWidth;                    // width of the bird
 	float birdHeight;					//
 	float[] topTubeStart;				// in y axis
 	float topTubeEnd;					//  ,,
 	float bottomTubeStart;				//  ,,
 	float[] bottomTubeEnd;				//  ,,
-	int tubeNumber;
-	boolean[] positionCondition;          // tube and bird are in same y axis or not
+	boolean[] positionCondition;        // tube and bird are in same y axis or not
     float birdXEnd;
-    float birdYEnd;
 
 	@Override
 	public void create () {
@@ -52,6 +54,8 @@ public class FlappyBirdClone extends ApplicationAdapter {
 	    bird2 = new Texture("bird2.png");
 	    tubeTop = new Texture("toptube.png");
 	    tubeBotm = new Texture("bottomtube.png");
+	    gameOverImage = new Texture("gameover.png");
+	    playImage = new Texture("play.png");
 	    screenHeight = Gdx.graphics.getHeight();
 	    screenWidth = Gdx.graphics.getWidth();
 	    birdPositionX = screenWidth/4 - screenWidth/18;
@@ -78,19 +82,16 @@ public class FlappyBirdClone extends ApplicationAdapter {
 		float min = (float) -0.5;
 		topTubeEnd = screenHeight/2;
 		bottomTubeStart = 0;
-		tubeNumber = -1;
 		birdXEnd = birdPositionX + birdWidth;
+		font = new BitmapFont();
+		font.setColor(Color.BLACK);
+		font.getData().setScale(3);
 	    for(int i = 0; i < numberOfTubes; i ++) {
 			tubePositionX[i] = screenWidth + i*tubeOffset;
 			tubeGapOffSets[i] = tubeGap*(rand.nextFloat()+ min);
-			// System.out.println(tubeGapOffSets[i]); // not necessary
 			topTubeStart[i] = screenHeight / 2 + tubeGap / 2 + tubeGapOffSets[i];
 			bottomTubeEnd[i] = screenHeight / 2 - tubeGap / 2 + tubeGapOffSets[i];
-			//positionCondition[i] = (birdPositionX <= tubePositionX[i]) && ();
 	    }
-
-	    // screenHeight / 2 + tubeGap / 2 + tubeGapOffSets[i]
-		// screenHeight / 2 - tubeGap / 2 + tubeGapOffSets[i]
 	}
 
 	@Override
@@ -105,6 +106,7 @@ public class FlappyBirdClone extends ApplicationAdapter {
             }
 			// bird don't fly and fall down
 			batch.draw(bird, birdPositionX, birdPositionY ,birdWidth, birdHeight);
+            batch.draw(playImage, screenWidth/2 - screenWidth/8, screenHeight/2 - screenHeight/16, screenWidth/4, screenHeight/8);
 		}
 
 		// playing
@@ -160,15 +162,16 @@ public class FlappyBirdClone extends ApplicationAdapter {
 
 		// when game over
 		if(gameOver) {
-			// bird
-			batch.draw(bird, birdPositionX, birdPositionY ,birdWidth, birdHeight);
 			// tubes
 			for (int i = 0; i < numberOfTubes; i++) {
 				batch.draw(tubeTop, tubePositionX[i], topTubeStart[i], tubeWidth, screenHeight / 2);
 				batch.draw(tubeBotm, tubePositionX[i], 0, tubeWidth, bottomTubeEnd[i]);
 			}
+			batch.draw(gameOverImage, screenWidth/2 - screenWidth/6, screenHeight/2 -screenHeight/16, screenWidth/3, screenHeight/8);
+			// bird
+			batch.draw(bird, birdPositionX, birdPositionY ,birdWidth, birdHeight);
 		}
-
+		font.draw(batch, String.valueOf(gameScore), screenWidth - 90, screenHeight - 20);
 		batch.end();
 	}
 
