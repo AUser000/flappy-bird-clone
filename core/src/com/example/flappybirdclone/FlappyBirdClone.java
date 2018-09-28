@@ -30,7 +30,8 @@ public class FlappyBirdClone extends ApplicationAdapter {
 	boolean gameStarted;                // game state - started or not
 	boolean gameOver;                   // game state - over or not
 	float fallingHeight;                // height of the falling
-	float fallingGravityFactor;         // falling gravity factor
+	float fallingUp;                    // when the tap bird should fall up
+    float fallingGravityFactor;         // falling gravity factor
 	float tubeGap;				        // gap between top and bottom // const
 	float tubeGapOffSets[];				// changing gap between
 	float tubePositionX[];
@@ -38,6 +39,7 @@ public class FlappyBirdClone extends ApplicationAdapter {
 	Random rand;
     float min;
 	float tubeSpeed;
+	float tubeSpeedFactor;
 	float tubeOffset;					// distance
 	int gameScore;
 	BitmapFont font;
@@ -70,11 +72,14 @@ public class FlappyBirdClone extends ApplicationAdapter {
 	    fly = true;
 	    gameStarted = false;
 	    gameOver = false;
-	    fallingHeight =  10;
-	    fallingGravityFactor = 1;
+	    fallingHeight =  10*(screenHeight/960);
+	    fallingUp = -11*(screenHeight/960);
+	    //System.out.println("screen height" +  screenHeight);
+	    fallingGravityFactor = (screenHeight/960);
 	    tubeGap = screenHeight/3;
 	    tubeWidth = screenWidth/7;
 	    tubeSpeed = screenWidth/100;
+	    tubeSpeedFactor = screenWidth/1000;
 	    numberOfTubes = 6;
 	    rand = new Random();
 		tubeOffset = screenWidth/2;
@@ -125,7 +130,7 @@ public class FlappyBirdClone extends ApplicationAdapter {
 
 			// getting touch inputs
 			if(Gdx.input.justTouched()) {
-				fallingHeight = -11;
+				fallingHeight = fallingUp;
 			} else {
 				fallingHeight = fallingHeight + fallingGravityFactor;
 			}
